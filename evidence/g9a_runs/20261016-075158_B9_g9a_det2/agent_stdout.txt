@@ -1,0 +1,3 @@
+Client connected on 3110..............
+Server has stopped the race on 3110. You were in 1 place.
+Race terminated or 100000 steps elapsed. Shutting down 3110.

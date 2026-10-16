@@ -1,0 +1,27 @@
+{
+  "finished": true,
+  "dnf_reason": null,
+  "lap_time_source": "lastLapTime",
+  "lap_time_s": 63.628,
+  "lap_times": [
+    63.628
+  ],
+  "damage": 0,
+  "hits": 0,
+  "offtrack_events": 14,
+  "offtrack_time_s": 5.04,
+  "top_speed_kmh": 299.0,
+  "avg_speed_kmh": 198.3,
+  "distance_m": 3646.8,
+  "sim_time_s": 62.98,
+  "steps": 3149,
+  "race_pos": 1,
+  "run_id": "20261016-075158_B9_g9a_det2",
+  "agent": "racelab/submission/torcs_jm_par_line_g9a.py",
+  "label": "B9_g9a_det2",
+  "mode": "fast",
+  "config": "train/corkscrew_idx9_1lap.xml",
+  "wall_s": 1.6,
+  "server_timeouts": 0,
+  "note": ""
+}

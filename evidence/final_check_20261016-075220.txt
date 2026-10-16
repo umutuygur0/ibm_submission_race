@@ -1,0 +1,3 @@
+torcs_jm_par_line_g9a.py: det 63.628 hasar 0.0 pist_dışı 14 | 10ms ×30: hasarsız 3/30, hasarsız+pist içi 0/30, tur ort 63.961 min 63.658 max 64.338, zaman aşımı ort 17.3
+torcs_jm_par_line_g7a.py: det 63.928 hasar 0.0 pist_dışı 10 | 10ms ×30: hasarsız 6/30, hasarsız+pist içi 0/30, tur ort 64.474 min 63.974 max 64.896, zaman aşımı ort 11.3
+torcs_jm_par_hybrid_res3a.py: det 64.878 hasar 0.0 pist_dışı 7 | 10ms ×30: hasarsız 30/30, hasarsız+pist içi 0/30, tur ort 65.159 min 65.116 max 65.266, zaman aşımı ort 4.5
