@@ -8,6 +8,7 @@ Please find my project submission for evaluation.
 Name: Umut Uygur
 Project Members: [team member names, or "individual project"]
 GitHub Link: https://github.com/umutuygur0/ibm_submission_race
+Final snapshot: [commit URL, optional]
 Video Demonstration: [video URL]
 
 Project Description / Problem Statement:
@@ -24,7 +25,7 @@ Enhancements:
    speed, brake, apex and gain parameters, 8 simulators in parallel (63.628 s). A residual-RL hybrid (64.878 s,
    30/30 damage-free under 10 ms timing) is included as a robust alternative.
 
-Use of IBM Bob and AI:
+Use of IBM Bob (Free trial version) and AI:
 [Describe honestly how IBM Bob and other AI assistants were used, e.g. code generation for the planner and search
 scripts, debugging the TORCS/UDP timing issues, analysing telemetry, and writing reports.]
 

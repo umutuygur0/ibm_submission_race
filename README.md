@@ -1,111 +1,156 @@
-# IBM AI Racing League — Corkscrew driver (63.628 s, zero damage)
+# AI Racing League final project: Corkscrew driver (1:03.628, zero damage)
 
-Autonomous driver for TORCS (`scr_server`) built for the **AI Racing League — Go FullSpeed with IBM Bob** cohort.
+Autonomous TORCS driver built for the **AI Racing League — Go FullSpeed with IBM Bob** cohort.
 
 | | |
 |---|---|
-| Track | Corkscrew, 1 lap, standing start, `scr_server 1`, car `car1-ow1` (dynamics unchanged) |
-| Best lap | **63.628 s** (1:03.628) |
+| Final script | [`driver/torcs_jm_par_line_g9a.py`](driver/torcs_jm_par_line_g9a.py) |
+| Track / settings | Corkscrew, 1 lap, standing start, driver `scr_server 1`, car `car1-ow1` (dynamics unchanged) |
+| Best lap | **63.628 s** (1:03.628), 3 identical repeat runs |
 | Damage | **0** |
 | Top speed | 299 km/h |
-| Final driver | [`driver/torcs_jm_par_line_g9a.py`](driver/torcs_jm_par_line_g9a.py) |
 | Video | _add link here_ |
 
-The driver is a single Python file based on the kit's `torcs_jm_par.py` client skeleton. It uses **only the Python
-standard library** (no numpy / PyTorch), and the full driving plan is embedded in the file.
+## Author and members
 
-## Run it
+- Umut Uygur: project owner; development, testing and submission.
+- _[other team members and their contributions, or "individual project"]_
 
-1. Start TORCS → Race → Quick Race → Configure Race: track **Corkscrew**, driver **scr_server 1**, **1 lap** → New Race
-   (TORCS waits on port 3001).
-2. In a terminal:
+## Problem statement
 
+The goal is the fastest standing-start lap of Corkscrew with **zero damage**, driving the car only through the SCR
+client interface. Our driver follows a racing line and speed plan computed in advance from the track geometry and
+corrects itself with a feedback controller. Its parameters were tuned by automated search over thousands of
+simulated laps.
+
+## Environment and setup
+
+- **OS:** Windows 11
+- **Python:** 3.12.10
+- **TORCS and challenge kit:** the TORCS Windows build supplied by the organisers, which includes the `scr_server`
+  driver. The race config needs Corkscrew, `scr_server 1` and 1 lap. The kit's car and driver files were **not
+  modified**: `cars/car1-ow1/car1-ow1.xml` is the original, and the car dynamics are unchanged.
+- **Required local files:** only `driver/torcs_jm_par_line_g9a.py`. The racing plan is embedded in the file.
+- **External dependencies:** none. The driver uses the Python standard library only (`socket`, `math`, `json`,
+  `zlib`, `base64`, ...).
+- The development code in `source/racelab/` additionally needs numpy and scipy, plus PyTorch for the RL parts. It is
+  **not** needed to run the driver.
+
+## Run
+
+1. Start TORCS **first**: Race → Quick Race → Configure Race → track **Corkscrew**, driver **scr_server 1**,
+   **1 lap** → New Race. TORCS waits for a client on UDP port 3001.
+2. Then start the client from this repository's `driver/` folder:
+
+Windows:
 ```
-cd driver
-python torcs_jm_par_line_g9a.py -p 3001
+py torcs_jm_par_line_g9a.py -p 3001
+```
+macOS/Linux:
+```
+python3 torcs_jm_par_line_g9a.py -p 3001
 ```
 
-Close heavy background programs while racing: the fastest driver is tuned for a TORCS step that is answered on time
-(see *Limitations*).
+`-p` selects the port (default 3001). Each `scr_server` slot listens on its own port (3001, 3002, ...); for a
+multi-car mass start, run one client per slot with that slot's port. Close heavy background programs while racing (see *Limitations*).
 
-## How it works
+## Results
 
-1. **Track model.** The Corkscrew centre line, width and elevation are read from the track mesh (`corkscrew.acc`).
-2. **Racing line.** A minimum-curvature line is computed with iteratively re-weighted least squares (high-curvature
-   points get more weight, which pushes the solution towards a minimax-curvature line), keeping a fixed margin to
-   the track edge. Final line: weight `1 + 8·κ/κmax`, margin 1.2 m (`source/racelab/planner/line_variants.py`).
-3. **Speed profile.** Maximum cornering speed from lateral grip + aerodynamic downforce, then forward (acceleration)
-   and backward (braking) passes, including gradient/vertical-curvature terms.
-4. **Controller.** Stanley-type steering (heading error, lateral error, curvature feed-forward, yaw damping, low-pass
-   filter), speed tracking with brake/throttle, gear selection from driven-wheel rpm, clutch slip control and launch
-   traction control for the standing start.
-5. **Per-corner tuning.** The lap is divided into 11 zones; each zone has a speed factor, brake factor, apex shift and
-   steering-gain multipliers.
-6. **Automatic search.** Island-model evolutionary search + coordinate search over all zone and controller
-   parameters, running up to 8 headless TORCS instances in parallel. A candidate only counts if the full lap is
-   finished with **zero damage**. Leaving the asphalt briefly is allowed by the rules and is bounded by a limit
-   on |trackPos|.
+All runs were measured on the same track and settings. Every row in
+[`experiment_results.csv`](experiment_results.csv) is a real recorded run.
 
-## Enhancements and results
-
-| Step | Lap | Notes |
+| Version | Lap | Damage |
 |---|---|---|
-| Kit baseline / first RL agent (SAC) | 85.7 s → 73.1 s | pure reinforcement learning, too much zig-zag on straights |
-| 1. Precomputed racing line + physics speed profile | 68.7 s | replaced end-to-end RL with a planned line |
-| 2. Gearbox, clutch slip control, launch traction control, per-corner gains | 64.9 s | faster standing start and corner exits |
-| 3. Evolutionary search on line variants + zone parameters (zero-damage constraint) | **63.628 s** | narrower, curvature-weighted racing line |
+| Kit baseline `snakeoil3_gym.py` | did not finish | 1863 |
+| End-to-end RL (SAC) | 85.736 s | 0 |
+| Improved RL + braking assist | 73.098 s | 0 |
+| Enhancement 1: racing line + speed profile | 68.746 s | 0 |
+| Enhancement 2: drivetrain/launch control + per-corner gains | 64.964 s | 0 |
+| Enhancement 3: automated search → **final** | **63.628 s** | 0 |
 
-Also explored: a **residual RL hybrid** (SAC learns small steering/pedal corrections on top of the planner):
-[`driver/torcs_jm_par_hybrid_res3a.py`](driver/torcs_jm_par_hybrid_res3a.py), 64.878 s, damage-free in 30/30 runs
-with 10 ms TORCS timing. Drifting (allowing larger slip angles) was tested; the search always turned it off because it
-was slower on this car.
+Evidence:
+- [`evidence/g9a_runs/`](evidence/g9a_runs/): the three final runs (`summary.json`, full per-step `telemetry.csv`,
+  logs).
+- [`evidence/final_check_20261016-075220.txt`](evidence/final_check_20261016-075220.txt): 30-run check with 10 ms
+  TORCS timing.
+- [`results/leaderboard.csv`](results/leaderboard.csv): all 1,684 benchmark runs of the project.
 
-Evidence: [`evidence/`](evidence/). It contains the three identical 63.628 s runs with telemetry, plus the final 30-run
-check. All benchmark runs are in [`results/leaderboard.csv`](results/leaderboard.csv) and
-[`results/LAP_LOG.md`](results/LAP_LOG.md).
+## Enhancements
+
+1. **Precomputed racing line + physics speed profile (85.7 s → 68.7 s).**
+   - *Why:* the RL driver zig-zagged on straights and braked late.
+   - *What:* track centre line, width and elevation are read from the track mesh. A minimum-curvature line is solved
+     with a fixed margin to the edge. The maximum speed at each point comes from lateral grip + downforce, then
+     forward/backward passes add acceleration and braking limits.
+   - *Steering:* a Stanley-type controller (heading error, lateral error, curvature feed-forward, yaw damping) follows
+     the line.
+   - *Code:* `source/racelab/planner/`.
+2. **Drivetrain and standing-start control + per-corner gains (68.7 s → 65.0 s).**
+   - *Why:* comparing telemetry showed time lost at the launch and on corner exits.
+   - *What:* gear selection from driven-wheel rpm, clutch slip control and launch traction control. Steering gains
+     are now set per corner zone.
+3. **Automated search with a zero-damage constraint (65.0 s → 63.628 s).**
+   - *Search:* island-model evolutionary search and coordinate search over per-zone speed, braking point, apex shift
+     and steering gains, plus racing-line variants. Up to 8 headless simulators run in parallel.
+   - *Constraint:* a candidate only counts if it finishes the lap with zero damage.
+   - *Result:* the best line weights high-curvature points (`1 + 8·κ/κmax`) and keeps a 1.2 m margin.
+   - *Rejected:* drifting (larger slip angles) was tested and rejected; it was always slower.
+
+Also included: a **residual RL hybrid** where SAC learns small corrections on top of the planner,
+[`driver/torcs_jm_par_hybrid_res3a.py`](driver/torcs_jm_par_hybrid_res3a.py). It runs 64.878 s and is the most
+robust variant: damage-free in 30/30 runs with 10 ms timing.
+
+## Use of IBM Bob
+
+_[Describe honestly what IBM Bob proposed or generated, and what you reviewed, tested or rejected. Also name any
+other AI assistants used and their contribution.]_
+
+## Demonstration
+
+_[video link]_ — one continuous standing-start lap on Corkscrew, with the provided (unchanged) livery.
 
 ## Livery
 
-[`livery/car1-ow1.rgb`](livery/car1-ow1.rgb) (512×512 SGI, preview [`livery/preview.png`](livery/preview.png)) is our
-team livery for the mass-start show. It is based on the provided IBM template, with orange-red replacing the blue.
-To use it, copy it to `torcs/drivers/scr_server/<slot>/car1-ow1.rgb` and restart TORCS. The official video uses the
-unchanged provided livery.
+[`livery/car1-ow1.rgb`](livery/car1-ow1.rgb) is our team livery for the mass-start show (512×512 SGI texture,
+preview: [`livery/preview.png`](livery/preview.png)). It is based on the provided IBM template, with orange-red
+replacing the blue. To install it, copy it to `torcs/drivers/scr_server/<slot>/car1-ow1.rgb` and restart TORCS.
 
 ## Limitations
 
-- `torcs_jm_par_line_g9a.py` is tuned for TORCS answering every step on time (GUI race). When steps are missed (10 ms
-  timeouts under heavy CPU load), the lap was damage-free in only 3/30 runs. The hybrid driver above is the robust
-  alternative (30/30).
-- Tuned for Corkscrew only. The plan is track-specific.
-- The driver does not react to other cars. In a mass start it drives its own line.
+- **Sensitive to missed steps.** The final driver is tuned for every TORCS step being answered on time, as in a
+  normal GUI race. With 10 ms timeouts under heavy CPU load it stayed damage-free in only 3/30 runs. The hybrid driver
+  is the robust alternative.
+- **Leaves the asphalt briefly.** The lap uses the run-off area at a few points (max |trackPos| 1.5, no contact, no
+  damage). That is allowed by the rules, but it leaves little margin.
+- **Corkscrew only.** The plan is track-specific.
+- **No opponent awareness.** The driver does not see other cars and simply follows its own line in a mass start.
+
+## Credits and licensing
+
+- TORCS and the `scr_server` / `gym_torcs` client skeleton (`torcs_jm_par.py`, snakeoil) belong to their original
+  authors and were provided through the course kit. The submission driver is built on that skeleton; we do not claim
+  ownership of the provided code, and the kit itself is not redistributed here.
+- The racing-line planner, controller, search, RL training code and livery modification are our own work.
 
 ## Repository layout
 
 ```
-driver/            final submission drivers (standalone, standard library only)
-livery/            team livery (.rgb) + preview
-evidence/          final runs: summary, telemetry, 30-run check
-results/           all benchmark runs (leaderboard.csv, LAP_LOG.md)
-source/racelab/    full development code
-  planner/         track model, racing line, speed profile, driver, searches, submission builder
-  planner/params/  tuned parameter sets (snap_g9det.json = final)
-  rl/              SAC / residual RL training code and small snapshots
-  run_benchmark.py headless benchmark + telemetry proxy
-docs/dev_log_tr/   development log and block reports (Turkish)
+driver/               final drivers (standalone, standard library only)
+livery/               team livery (.rgb) + preview
+evidence/             final runs (summary, telemetry, logs) and 30-run check
+experiment_results.csv  one row per recorded milestone run
+results/              all benchmark runs (leaderboard.csv, LAP_LOG.md)
+source/racelab/       full development code
+  planner/            track model, racing line, speed profile, driver, searches, submission builder
+  planner/params/     tuned parameter sets (snap_g9det.json = final)
+  rl/                 SAC / residual RL training code, small model snapshots
+  submission/         earlier milestone drivers listed in experiment_results.csv
+  run_benchmark.py    headless benchmark + telemetry proxy
+docs/dev_log_tr/      development log and block reports (Turkish)
+SUBMISSION.md         submission e-mail
 ```
 
-To rebuild or re-tune, place `source/racelab/` inside the course kit folder next to `torcs/` and `gym_torcs/`.
-Those kit components are not redistributed here. Then run, for example:
-
+To rebuild the driver, place `source/racelab/` inside the kit folder next to `torcs/` and `gym_torcs/`, then run:
 ```
 python racelab/planner/build_line_submission.py --params racelab/planner/params/snap_g9det.json --out my_driver.py
-python racelab/run_benchmark.py --agent my_driver.py --mode fast
 ```
-
-The development code expects Python 3.12 with numpy and scipy, plus PyTorch for the RL parts.
-
-## Credits
-
-- TORCS and the `scr_server` / `gym_torcs` client skeleton (`torcs_jm_par.py`, snakeoil) come from the course kit and
-  their original authors. We do not claim ownership of the provided code.
-- Racing-line, controller, search and RL code: our own work.
