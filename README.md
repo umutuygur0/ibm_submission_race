@@ -9,12 +9,16 @@ Autonomous TORCS driver built for the **AI Racing League — Go FullSpeed with I
 | Best lap | **63.628 s** (1:03.628), 3 identical repeat runs |
 | Damage | **0** |
 | Top speed | 299 km/h |
-| Video | _add link here_ |
+| Video + screenshot | [Google Drive](https://drive.google.com/drive/folders/10xlkvkG5lfCXRIYFQKuudTFVKJwvKDof?usp=sharing) |
 
 ## Author and members
 
-- Umut Uygur: project owner; development, testing and submission.
-- _[other team members and their contributions, or "individual project"]_
+Team:
+- Umut Uygur (Computer Engineering, 4th year): team lead, development, testing and submission — umutt.uygurr@gmail.com
+- Yusuf Atakan Ünal (Computer Engineering, 4th year) — yusufatakanu@gmail.com
+- Kayra Üstten (Electrical and Electronics Engineering) — kayraustten@gmail.com
+- Vesile Dila Akhan (Computer Engineering, 2nd year) — dilaakhan05@gmail.com
+- Kaan Efe Kocaman (Computer Engineering, 1st year) — kefe.kocaman@tedu.edu.tr, kocamankaanefe@gmail.com
 
 ## Problem statement
 
@@ -69,6 +73,7 @@ All runs were measured on the same track and settings. Every row in
 | Enhancement 3: automated search → **final** | **63.628 s** | 0 |
 
 Evidence:
+- [Video and screenshot of the GUI lap](https://drive.google.com/drive/folders/10xlkvkG5lfCXRIYFQKuudTFVKJwvKDof?usp=sharing)
 - [`evidence/g9a_runs/`](evidence/g9a_runs/): the three final runs (`summary.json`, full per-step `telemetry.csv`,
   logs).
 - [`evidence/final_check_20261016-075220.txt`](evidence/final_check_20261016-075220.txt): 30-run check with 10 ms
@@ -102,12 +107,27 @@ robust variant: damage-free in 30/30 runs with 10 ms timing.
 
 ## Use of IBM Bob
 
-_[Describe honestly what IBM Bob proposed or generated, and what you reviewed, tested or rejected. Also name any
-other AI assistants used and their contribution.]_
+**IBM Bob** was used mainly for understanding, reviewing and checking:
+- Making sense of the kit and project structure: what each folder, script and config file does, and how the client
+  talks to `scr_server`.
+- Understanding the car mechanics and driving control: gears, clutch, braking, steering and the sensor values the
+  driver receives.
+- Code review and testing: walking through the driver code, finding bugs and weak spots, and suggesting fixes.
+- Staying within the competition rules: checking that the driver does not change the car model or its dynamics,
+  only uses the allowed client interface, and that the lap counts as clean (zero damage).
+
+Every suggestion was reviewed by us and confirmed with simulator runs before it was kept.
+
+**Claude Code** (Anthropic) was used for the rest of the development: writing the racing-line planner, controller,
+parameter-search and RL training code, running the experiments, and analysing telemetry. Every reported result comes
+from recorded simulator runs; see `experiment_results.csv` and `evidence/`.
 
 ## Demonstration
 
-_[video link]_ — one continuous standing-start lap on Corkscrew, with the provided (unchanged) livery.
+Video and final-lap screenshot: [Google Drive folder](https://drive.google.com/drive/folders/10xlkvkG5lfCXRIYFQKuudTFVKJwvKDof?usp=sharing)
+
+One continuous standing-start lap on Corkscrew with the provided (unchanged) livery, from launch to the
+final lap time and damage readout.
 
 ## Livery
 

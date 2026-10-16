@@ -6,10 +6,15 @@ Hello Team,
 Please find my project submission for evaluation.
 
 Name: Umut Uygur
-Project Members: [team member names, or "individual project"]
+Project Members:
+- Umut Uygur (umutt.uygurr@gmail.com)
+- Yusuf Atakan Ünal (yusufatakanu@gmail.com)
+- Kayra Üstten (kayraustten@gmail.com)
+- Vesile Dila Akhan (dilaakhan05@gmail.com)
+- Kaan Efe Kocaman (kefe.kocaman@tedu.edu.tr, kocamankaanefe@gmail.com)
 GitHub Link: https://github.com/umutuygur0/ibm_submission_race
 Final snapshot: [commit URL, optional]
-Video Demonstration: [video URL]
+Video Demonstration: https://drive.google.com/drive/folders/10xlkvkG5lfCXRIYFQKuudTFVKJwvKDof?usp=sharing
 
 Project Description / Problem Statement:
 An autonomous TORCS driver that sets the fastest possible standing-start lap on Corkscrew with zero damage.
@@ -26,8 +31,12 @@ Enhancements:
    30/30 damage-free under 10 ms timing) is included as a robust alternative.
 
 Use of IBM Bob (Free trial version) and AI:
-[Describe honestly how IBM Bob and other AI assistants were used, e.g. code generation for the planner and search
-scripts, debugging the TORCS/UDP timing issues, analysing telemetry, and writing reports.]
+IBM Bob was used mainly to understand the kit and project structure (folders, scripts, configs and the
+scr_server client interface) and the car mechanics and driving control. It was also used for code review and
+testing: finding bugs and weak spots in the driver code. Finally, it was used to check that the solution stays within
+the competition rules (no change to the car model or dynamics, clean zero-damage lap). We reviewed every suggestion
+and confirmed it with simulator runs before keeping it. Claude Code was used for the rest of the development:
+the racing-line planner, controller, parameter search and RL training code, experiments and telemetry analysis.
 
 Thank you,
 Umut Uygur
